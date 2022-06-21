@@ -20,7 +20,7 @@ ORDER BY path;
 
 --Найти все древо подкатегорий для категории
 --Materialized Path
-EXPLAIN ANALYZE SELECT * FROM category WHERE path[:2] = ARRAY[1, 1] AND cardinality(path) > 2;
+SELECT * FROM category WHERE path[:2] = ARRAY[1, 1] AND cardinality(path) > 2;
 
 --2.1 Получение информации о сумме товаров заказанных под каждого клиента
 SELECT c.name, SUM(o.order_sum)
@@ -30,7 +30,7 @@ GROUP BY c.name
 ORDER BY 2 DESC;
 
 --2.2 Найти количество дочерних элементов первого уровня вложенности для категорий номенклатуры
-SELECT
+EXPLAIN ANALYZE SELECT
     REPEAT('-', cardinality(path) - 1) || name,
     (SELECT count(*) FROM category t WHERE t.parent_id = c.category_id)
 FROM category c
