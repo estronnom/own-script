@@ -1,10 +1,10 @@
---Найти количество дочерних элементов первого уровня вложенности для категорий номенклатуры
+--Найти все подкатегории первого уровня для категории
 --Adjacency List
-SELECT COUNT(*) FROM category WHERE parent_id = :id;
+SELECT * FROM category WHERE parent_id = :id;
 
---Найти количество дочерних элементов первого уровня вложенности для категорий номенклатуры
+--Найти все подкатегории первого уровня для категории
 --Materialized Path
-SELECT COUNT(*) FROM category WHERE path[:14] = ARRAY[1,1,3,1,1,2,1,1,2,2,1,1,1,1] AND cardinality(path) = 15;
+SELECT * FROM category WHERE path[:14] = ARRAY[1,1,3,1,1,2,1,1,2,2,1,1,1,1] AND cardinality(path) = 15;
 
 --Найти все древо подкатегорий для категории
 --Adjacency List
@@ -22,9 +22,16 @@ ORDER BY path;
 --Materialized Path
 EXPLAIN ANALYZE SELECT * FROM category WHERE path[:2] = ARRAY[1, 1] AND cardinality(path) > 2;
 
---Получение информации о сумме товаров заказанных под каждого клиента
+--2.1 Получение информации о сумме товаров заказанных под каждого клиента
 SELECT c.name, SUM(o.order_sum)
 FROM client c
 JOIN "order" o USING(client_id)
 GROUP BY c.name
 ORDER BY 2 DESC;
+
+--2.2 Найти количество дочерних элементов первого уровня вложенности для категорий номенклатуры
+SELECT
+    REPEAT('-', cardinality(path) - 1) || name,
+    (SELECT count(*) FROM category t WHERE t.parent_id = c.category_id)
+FROM category c
+ORDER BY path;
