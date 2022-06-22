@@ -30,7 +30,7 @@ GROUP BY c.name
 ORDER BY 2 DESC;
 
 --2.2 Найти количество дочерних элементов первого уровня вложенности для категорий номенклатуры
-EXPLAIN ANALYZE SELECT
+SELECT
     REPEAT('-', cardinality(path) - 1) || name,
     (SELECT count(*) FROM category t WHERE t.parent_id = c.category_id)
 FROM category c
